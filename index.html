@@ -3,12 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jogo da Cobrinha</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Jogo da Cobrinha 🐍</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Jogo da Cobrinha</h1>
-  <canvas id="game" width="400" height="400"></canvas>
+  <div class="container">
+    <header>
+      <h1>🐍 JOGO DA COBRINHA 🐍</h1>
+      <div class="info-bar">
+        <div class="score-box">
+          <span class="label">Pontos:</span>
+          <span id="score">0</span>
+        </div>
+        <div class="level-box">
+          <span class="label">Nível:</span>
+          <span id="level">1</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="game-wrapper">
+        <canvas id="game"></canvas>
+      </div>
+
+      <div class="controls">
+        <button id="startBtn" class="btn btn-start">▶ Iniciar</button>
+        <button id="pauseBtn" class="btn btn-pause" disabled>⏸ Pausar</button>
+        <button id="restartBtn" class="btn btn-restart">🔄 Reiniciar</button>
+      </div>
+
+      <div class="mobile-controls">
+        <button id="upBtn" class="arrow-btn up">△</button>
+        <div class="horizontal-controls">
+          <button id="leftBtn" class="arrow-btn left">◄</button>
+          <button id="downBtn" class="arrow-btn down">▽</button>
+          <button id="rightBtn" class="arrow-btn right">►</button>
+        </div>
+      </div>
+
+      <div class="instructions">
+        <h3>📋 Como Jogar</h3>
+        <ul>
+          <li>Use as setas do teclado ou os botões para controlar</li>
+          <li>Coma a comida vermelha para crescer</li>
+          <li>Não bata nas paredes ou em você mesmo</li>
+          <li>O jogo fica mais rápido a cada 5 pontos</li>
+        </ul>
+      </div>
+    </main>
+
+    <footer>
+      <p>Desenvolvido com ❤️ | Divirta-se!</p>
+    </footer>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
