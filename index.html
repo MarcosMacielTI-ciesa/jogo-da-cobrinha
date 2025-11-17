@@ -10,8 +10,20 @@
 </head>
 <body>
   <div class="container">
+    <div id="nameModal" class="modal">
+      <div class="modal-content">
+        <h2>Bem-vindo ao Jogo da Cobrinha! 🐍</h2>
+        <p>Digite seu nome ou apelido:</p>
+        <input type="text" id="playerName" placeholder="Seu nome..." maxlength="20">
+        <button id="confirmNameBtn" class="btn btn-start">Começar</button>
+      </div>
+    </div>
+
     <header>
       <h1>🐍 JOGO DA COBRINHA 🐍</h1>
+      <div class="player-info">
+        <span id="playerDisplay">Jogador: -</span>
+      </div>
       <div class="info-bar">
         <div class="score-box">
           <span class="label">Pontos:</span>
@@ -21,6 +33,10 @@
           <span class="label">Nível:</span>
           <span id="level">1</span>
         </div>
+        <div class="best-score-box">
+          <span class="label">Melhor:</span>
+          <span id="bestScore">0</span>
+        </div>
       </div>
     </header>
 
@@ -29,19 +45,28 @@
         <canvas id="game"></canvas>
       </div>
 
+      <div class="mobile-controls">
+        <div class="mobile-controls-inner">
+          <div class="mobile-controls-left">
+            <div class="mobile-pad">
+              <button id="upBtn" class="arrow-btn up">△</button>
+              <button id="downBtn" class="arrow-btn down">▽</button>
+            </div>
+          </div>
+
+          <div class="mobile-controls-right">
+            <div class="horizontal-controls">
+              <button id="leftBtn" class="arrow-btn left">◄</button>
+              <button id="rightBtn" class="arrow-btn right">►</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="controls">
         <button id="startBtn" class="btn btn-start">▶ Iniciar</button>
         <button id="pauseBtn" class="btn btn-pause" disabled>⏸ Pausar</button>
         <button id="restartBtn" class="btn btn-restart">🔄 Reiniciar</button>
-      </div>
-
-      <div class="mobile-controls">
-        <button id="upBtn" class="arrow-btn up">△</button>
-        <div class="horizontal-controls">
-          <button id="leftBtn" class="arrow-btn left">◄</button>
-          <button id="downBtn" class="arrow-btn down">▽</button>
-          <button id="rightBtn" class="arrow-btn right">►</button>
-        </div>
       </div>
 
       <div class="instructions">
