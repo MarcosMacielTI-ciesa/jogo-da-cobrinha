@@ -65,11 +65,44 @@ function confirmPlayerName() {
   bestScore = getPlayerScores(currentPlayer);
   hideNameModal();
   updatePlayerDisplay();
+  renderLeaderboard();
 }
 
 function updatePlayerDisplay() {
   playerDisplay.textContent = `Jogador: ${currentPlayer}`;
   bestScoreDisplay.textContent = bestScore;
+}
+
+// Coleta todas as pontuações salvas no localStorage (keys com prefixo snake_score_)
+function getAllScores() {
+  const prefix = 'snake_score_';
+  const list = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key) continue;
+    if (key.startsWith(prefix)) {
+      const name = key.slice(prefix.length);
+      const val = parseInt(localStorage.getItem(key)) || 0;
+      list.push({ name, score: val });
+    }
+  }
+  return list;
+}
+
+function renderLeaderboard(limit = 5) {
+  const tbody = document.querySelector('#leaderboardTable tbody');
+  if (!tbody) return;
+  const scores = getAllScores().sort((a, b) => b.score - a.score).slice(0, limit);
+  tbody.innerHTML = '';
+  if (scores.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:rgba(255,255,255,0.7)">Sem pontuações ainda</td></tr>';
+    return;
+  }
+  scores.forEach((entry, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${idx + 1}</td><td>${entry.name}</td><td>${entry.score}</td>`;
+    tbody.appendChild(tr);
+  });
 }
 
 // Ajustar tamanho do canvas responsivamente
@@ -139,6 +172,8 @@ function updateDisplay() {
     bestScoreDisplay.textContent = bestScore;
     savePlayerScore(currentPlayer, bestScore);
   }
+  // Atualiza placar
+  renderLeaderboard();
 }
 
 function startGame() {
@@ -376,3 +411,5 @@ playerNameInput.addEventListener("keypress", (e) => {
 });
 
 loadPlayerName();
+// Renderiza placar ao carregar a página
+renderLeaderboard();
