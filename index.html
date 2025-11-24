@@ -15,7 +15,7 @@
         <h2>Bem-vindo ao Jogo da Cobrinha! 🐍</h2>
         <p>Digite seu nome ou apelido:</p>
         <input type="text" id="playerName" placeholder="Seu nome..." maxlength="20">
-        <button id="confirmNameBtn" class="btn btn-start">Começar</button>
+        <button id="confirmNameBtn" type="button" class="btn btn-start" onclick="confirmPlayerName()">Começar</button>
       </div>
     </div>
 
@@ -79,20 +79,45 @@
         </ul>
       </div>
 
-      <div class="leaderboard">
-        <h3>🏆 Placar</h3>
-        <table id="leaderboardTable">
-          <thead>
-            <tr>
-              <th>Posição</th>
-              <th>Nome</th>
-              <th>Pontos</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- linhas preenchidas pelo script -->
-          </tbody>
-        </table>
+      <div class="difficulty-select">
+        <h3>⚙️ Dificuldade</h3>
+        <div class="diff-buttons">
+          <button id="easyBtn" class="diff-btn" data-diff="easy">Fácil</button>
+          <button id="mediumBtn" class="diff-btn active" data-diff="medium">Médio</button>
+          <button id="hardBtn" class="diff-btn" data-diff="hard">Difícil</button>
+        </div>
+      </div>
+
+      <div class="leaderboards">
+        <div class="leaderboard lb-easy">
+          <h3>🏆 Fácil</h3>
+          <table id="leaderboard_easy">
+            <thead>
+              <tr><th>Posição</th><th>Nome</th><th>Pontos</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="leaderboard lb-medium">
+          <h3>🏆 Médio</h3>
+          <table id="leaderboard_medium">
+            <thead>
+              <tr><th>Posição</th><th>Nome</th><th>Pontos</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="leaderboard lb-hard">
+          <h3>🏆 Difícil</h3>
+          <table id="leaderboard_hard">
+            <thead>
+              <tr><th>Posição</th><th>Nome</th><th>Pontos</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
     </main>
 

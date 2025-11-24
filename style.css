@@ -4,6 +4,12 @@
   padding: 0;
   box-sizing: border-box;
 }
+/* style.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
@@ -369,30 +375,36 @@ footer {
   font-size: 1.05em;
 }
 
-#leaderboardTable {
+/* Table layout for leaderboards */
+.leaderboard table {
   width: 100%;
   border-collapse: collapse;
-  color: rgba(255,255,255,0.9);
+  table-layout: fixed;
+  color: rgba(255,255,255,0.95);
 }
 
-#leaderboardTable th, #leaderboardTable td {
+.leaderboard th, .leaderboard td {
   padding: 8px 6px;
   text-align: left;
   border-bottom: 1px solid rgba(0,255,0,0.06);
   font-size: 0.95em;
 }
 
-#leaderboardTable thead th {
+.leaderboard thead th {
   color: rgba(0,255,0,0.9);
   font-weight: 700;
 }
 
-#leaderboardTable tbody tr:nth-child(odd) {
+.leaderboard tbody tr:nth-child(odd) {
   background: rgba(0,255,0,0.02);
 }
 
+.leaderboard th.position, .leaderboard td.position { width: 12%; }
+.leaderboard th.name, .leaderboard td.name { width: 60%; }
+.leaderboard th.points, .leaderboard td.points { width: 28%; text-align: right; font-weight: 700; }
+
 @media (max-width: 420px) {
-  #leaderboardTable th, #leaderboardTable td {
+  .leaderboard th, .leaderboard td {
     padding: 6px 4px;
     font-size: 0.85em;
   }
@@ -497,3 +509,108 @@ footer {
     font-size: 1em;
   }
 }
+
+/* Difficulty selector and themes */
+.difficulty-select {
+  margin-top: 12px;
+}
+.diff-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+.diff-btn {
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.diff-btn.active {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+
+.leaderboards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+
+.lb-easy h3 { color: #4cd964; }
+.lb-medium h3 { color: #ffd60a; }
+.lb-hard h3 { color: #ff4d4f; }
+
+/* Theme classes applied to container to change accent colors */
+.theme-easy .container { border-color: rgba(76,217,100,0.12); }
+.theme-easy header h1 { text-shadow: 0 0 20px #4cd964; }
+.theme-easy canvas { border-color: #4cd964; }
+
+.theme-medium .container { border-color: rgba(255,214,10,0.12); }
+.theme-medium header h1 { text-shadow: 0 0 20px #ffd60a; }
+.theme-medium canvas { border-color: #ffd60a; }
+
+.theme-hard .container { border-color: rgba(255,77,79,0.12); }
+.theme-hard header h1 { text-shadow: 0 0 20px #ff4d4f; }
+.theme-hard canvas { border-color: #ff4d4f; }
+  --accent-light: rgba(76,217,100,0.12);
+  --modal-border: rgba(76,217,100,0.5);
+  --modal-glow: rgba(76,217,100,0.25);
+  --btn-start-from: #4cd964;
+  --btn-start-to: #2ea84f;
+  --accent-text: #000;
+}
+.theme-medium {
+  --accent: #ffd60a;
+  --accent-light: rgba(255,214,10,0.12);
+  --modal-border: rgba(255,214,10,0.45);
+  --modal-glow: rgba(255,214,10,0.18);
+  --btn-start-from: #ffd60a;
+  --btn-start-to: #e6b800;
+  --accent-text: #000;
+}
+.theme-hard {
+  --accent: #ff4d4f;
+  --accent-light: rgba(255,77,79,0.12);
+  --modal-border: rgba(255,77,79,0.5);
+  --modal-glow: rgba(255,77,79,0.2);
+  --btn-start-from: #ff6b6b;
+  --btn-start-to: #ff4d4f;
+  --accent-text: #fff;
+}
+
+.theme-easy .container { border-color: var(--accent-light); }
+.theme-easy header h1 { text-shadow: 0 0 20px var(--accent); }
+.theme-easy canvas { border-color: var(--accent); }
+
+.theme-medium .container { border-color: var(--accent-light); }
+.theme-medium header h1 { text-shadow: 0 0 20px var(--accent); }
+.theme-medium canvas { border-color: var(--accent); }
+
+.theme-hard .container { border-color: var(--accent-light); }
+.theme-hard header h1 { text-shadow: 0 0 20px var(--accent); }
+.theme-hard canvas { border-color: var(--accent); }
+
+/* Active difficulty button style uses accent */
+.diff-btn.active {
+  background: linear-gradient(135deg, var(--btn-start-from), var(--btn-start-to));
+  color: var(--accent-text);
+  border: none;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+}
+
+/* Adjust modal and control colors using accent */
+.theme-easy .modal-content, .theme-medium .modal-content, .theme-hard .modal-content {
+  border-color: var(--modal-border);
+  box-shadow: 0 0 30px var(--modal-glow);
+}
+.theme-easy .modal-content input, .theme-medium .modal-content input, .theme-hard .modal-content input {
+  color: var(--accent);
+}
+.theme-easy .arrow-btn, .theme-medium .arrow-btn, .theme-hard .arrow-btn {
+  border-color: rgba(255,255,255,0.06);
+  color: var(--accent);
+}
+
