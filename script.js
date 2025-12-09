@@ -17,6 +17,18 @@ const upBtn = document.getElementById("upBtn");
 const downBtn = document.getElementById("downBtn");
 const leftBtn = document.getElementById("leftBtn");
 const rightBtn = document.getElementById("rightBtn");
+const upBtn1 = document.getElementById("upBtn1");
+const downBtn1 = document.getElementById("downBtn1");
+const leftBtn1 = document.getElementById("leftBtn1");
+const rightBtn1 = document.getElementById("rightBtn1");
+const controlModal = document.getElementById("controlModal");
+const swipeOverlay = document.getElementById("swipeOverlay");
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsModal = document.getElementById('settingsModal');
+const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+const soundToggle = document.getElementById('soundToggle');
+const soundVolume = document.getElementById('soundVolume');
 const easyBtn = document.getElementById("easyBtn");
 const mediumBtn = document.getElementById("mediumBtn");
 const hardBtn = document.getElementById("hardBtn");
@@ -128,8 +140,104 @@ function confirmPlayerName() {
   hideNameModal();
   updatePlayerDisplay();
   renderAllLeaderboards();
-  // não iniciar automaticamente — pressione 'Iniciar' para começar
+  // abrir seleção de controles antes de iniciar
+  showControlSelection();
 }
+
+function showControlSelection() {
+  if (!controlModal) return;
+  controlModal.classList.remove('hidden');
+}
+
+function hideControlSelection() {
+  if (!controlModal) return;
+  controlModal.classList.add('hidden');
+}
+
+let selectedControl = 'type2';
+function applyControlType(type) {
+  selectedControl = type;
+  // mostrar/ocultar layouts
+  const t1 = document.getElementById('controlsType1');
+  const t2 = document.getElementById('controlsType2');
+  if (t1) t1.classList.toggle('hidden', type !== 'type1');
+  if (t2) t2.classList.toggle('hidden', type !== 'type2');
+  if (swipeOverlay) swipeOverlay.classList.toggle('hidden', type !== 'swipe');
+  // atualizar visual dos cartões
+  document.querySelectorAll('.choose-control-btn').forEach(btn => {
+    const ctrl = btn.getAttribute('data-control');
+    const card = btn.closest('.control-card');
+    if (!card) return;
+    if (ctrl === type) {
+      card.classList.add('active');
+      btn.classList.add('active');
+      btn.textContent = 'Ativado';
+    } else {
+      card.classList.remove('active');
+      btn.classList.remove('active');
+      btn.textContent = 'Escolher';
+    }
+  });
+
+  // sincronizar com modal de configurações (radio)
+  const radio = document.querySelector(`input[name="ctrlType"][value="${type}"]`);
+  if (radio) radio.checked = true;
+
+  // persistir imediatamente
+  saveSettings();
+
+  hideControlSelection();
+}
+
+function updateControlStatusVisuals() {
+  const onPath = 'img/toggle_on.png';
+  const offPath = 'img/toggle_off.png';
+  document.querySelectorAll('.choose-control-btn').forEach(btn => {
+    const ctrl = btn.getAttribute('data-control');
+    const card = btn.closest('.control-card');
+    if (!card) return;
+    const statusImg = card.querySelector('.ctrl-status');
+    if (!statusImg) return;
+    if (ctrl === selectedControl) {
+      statusImg.src = onPath;
+      statusImg.alt = 'Status: conectado';
+      btn.classList.add('active');
+      card.classList.add('active');
+      btn.textContent = 'Ativado';
+    } else {
+      statusImg.src = offPath;
+      statusImg.alt = 'Status: não conectado';
+      btn.classList.remove('active');
+      card.classList.remove('active');
+      btn.textContent = 'Escolher';
+    }
+  });
+}
+
+// update visuals when settings loaded or control changed
+const origApplyControlType = applyControlType;
+applyControlType = function(type) {
+  origApplyControlType(type);
+  updateControlStatusVisuals();
+};
+
+// Detectar cliques nas opções do modal (botão 'Escolher') e abrir/fechar configurações
+document.addEventListener('click', (e) => {
+  const chooseEl = e.target.closest && e.target.closest('.choose-control-btn');
+  if (chooseEl) {
+    const t = chooseEl.getAttribute('data-control');
+    if (t) applyControlType(t);
+  }
+  // settings open/close
+  const settingsOpen = e.target.closest && e.target.closest('#settingsBtn');
+  if (settingsOpen) {
+    if (settingsModal) settingsModal.classList.remove('hidden');
+  }
+  const settingsClose = e.target.closest && e.target.closest('#closeSettingsBtn');
+  if (settingsClose) {
+    if (settingsModal) settingsModal.classList.add('hidden');
+  }
+});
 
 function updatePlayerDisplay() {
   playerDisplay.textContent = `Jogador: ${currentPlayer}`;
@@ -288,16 +396,19 @@ function draw() {
   if (direction === "left") head.x -= 1;
   if (direction === "right") head.x += 1;
   if (head.x < 0 || head.x >= GRID || head.y < 0 || head.y >= GRID) {
+    playEventSound('gameover');
     endGame();
     return;
   }
   if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+    playEventSound('gameover');
     endGame();
     return;
   }
   snake.unshift(head);
   if (head.x === food.x && head.y === food.y) {
     score++;
+    playEventSound('eat');
     const newLevel = Math.floor(score / 5) + 1;
     if (newLevel !== level) {
       level = newLevel;
@@ -392,6 +503,10 @@ function handleMobileInput(dir, event) {
   downBtn.addEventListener(evt, e => handleMobileInput('down', e));
   leftBtn.addEventListener(evt, e => handleMobileInput('left', e));
   rightBtn.addEventListener(evt, e => handleMobileInput('right', e));
+  if (upBtn1) upBtn1.addEventListener(evt, e => handleMobileInput('up', e));
+  if (downBtn1) downBtn1.addEventListener(evt, e => handleMobileInput('down', e));
+  if (leftBtn1) leftBtn1.addEventListener(evt, e => handleMobileInput('left', e));
+  if (rightBtn1) rightBtn1.addEventListener(evt, e => handleMobileInput('right', e));
 });
 
 // Difficulty buttons
@@ -402,6 +517,8 @@ function applyDifficulty(d) {
   if (btn) btn.classList.add('active');
   document.body.classList.remove('theme-easy','theme-medium','theme-hard');
   document.body.classList.add(`theme-${d}`);
+  // expose accent color to CSS
+  try { document.documentElement.style.setProperty('--accent-color', ACCENT_COLORS[d]); } catch (e) {}
   if (currentPlayer) {
     bestScore = getPlayerScores(currentPlayer, currentDifficulty);
     updatePlayerDisplay();
@@ -429,4 +546,102 @@ playerNameInput.addEventListener("keypress", (e) => {
 loadPlayerName();
 renderAllLeaderboards();
 // aplicar tema/dificuldade ativa na inicialização
+loadSettings();
 applyDifficulty(currentDifficulty);
+
+// --- Swipe / Drag controls ---
+let touchStartX = null;
+let touchStartY = null;
+function onPointerDown(e) {
+  const p = (e.touches && e.touches[0]) || e;
+  touchStartX = p.clientX;
+  touchStartY = p.clientY;
+}
+
+function onPointerUp(e) {
+  if (touchStartX === null || touchStartY === null) return;
+  const p = (e.changedTouches && e.changedTouches[0]) || e;
+  const dx = p.clientX - touchStartX;
+  const dy = p.clientY - touchStartY;
+  const absX = Math.abs(dx);
+  const absY = Math.abs(dy);
+  const threshold = 30; // pixels
+  if (Math.max(absX, absY) > threshold && gameRunning && !gamePaused) {
+    if (absX > absY) {
+      if (dx > 0 && direction !== 'left') nextDirection = 'right';
+      if (dx < 0 && direction !== 'right') nextDirection = 'left';
+    } else {
+      if (dy > 0 && direction !== 'up') nextDirection = 'down';
+      if (dy < 0 && direction !== 'down') nextDirection = 'up';
+    }
+  }
+  touchStartX = null; touchStartY = null;
+}
+
+// Conectar swipeOverlay e canvas para capturar gestos quando modo 'swipe' estiver ativo
+if (swipeOverlay) {
+  ['pointerdown','touchstart','mousedown'].forEach(ev => swipeOverlay.addEventListener(ev, onPointerDown));
+  ['pointerup','touchend','mouseup'].forEach(ev => swipeOverlay.addEventListener(ev, onPointerUp));
+}
+
+// Por segurança, também permitir swipe direto no canvas
+['pointerdown','touchstart'].forEach(ev => canvas.addEventListener(ev, onPointerDown));
+['pointerup','touchend'].forEach(ev => canvas.addEventListener(ev, onPointerUp));
+
+// --- Settings: sound + control persistence ---
+let soundEnabled = true;
+let soundVol = 0.6;
+
+function loadSettings() {
+  try {
+    const s = localStorage.getItem('snake_settings');
+    if (s) {
+      const obj = JSON.parse(s);
+      selectedControl = obj.control || selectedControl;
+      soundEnabled = obj.soundEnabled !== undefined ? obj.soundEnabled : soundEnabled;
+      soundVol = obj.soundVol !== undefined ? obj.soundVol : soundVol;
+    }
+  } catch (err) { console.debug('loadSettings err', err); }
+  // apply UI
+  applyControlType(selectedControl);
+  if (soundToggle) soundToggle.checked = !!soundEnabled;
+  if (soundVolume) soundVolume.value = soundVol;
+}
+
+function saveSettings() {
+  try {
+    const obj = { control: selectedControl, soundEnabled: !!soundToggle?.checked, soundVol: parseFloat(soundVolume?.value || soundVol) };
+    localStorage.setItem('snake_settings', JSON.stringify(obj));
+    soundEnabled = obj.soundEnabled;
+    soundVol = obj.soundVol;
+  } catch (err) { console.debug('saveSettings err', err); }
+}
+
+if (saveSettingsBtn) saveSettingsBtn.addEventListener('click', () => { saveSettings(); if (settingsModal) settingsModal.classList.add('hidden'); });
+if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => { if (settingsModal) settingsModal.classList.add('hidden'); });
+
+// Simple beep using WebAudio for events
+function playBeep(freq = 440, duration = 0.08) {
+  if (!soundEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = freq;
+    g.gain.value = soundVol;
+    o.connect(g);
+    g.connect(ctx.destination);
+    o.start();
+    setTimeout(() => { o.stop(); ctx.close(); }, duration * 1000);
+  } catch (err) { /* ignore */ }
+}
+
+// Play sounds on eat and game over
+function playEventSound(eventName) {
+  if (!soundEnabled) return;
+  if (eventName === 'eat') playBeep(880, 0.06);
+  if (eventName === 'gameover') playBeep(180, 0.25);
+}
+
+// Hook into eating and game over
